@@ -1,0 +1,213 @@
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content=" Mapa com mais de dois endereços">
+    <meta name="author" content=" Lennon">
+    <title> Mymap -  Rota com mais de 2 pontos </title>
+    <style>
+        body{
+            margin: 0px;
+            background-color: #fff;
+        }
+
+        .info{
+            position: fixed;
+            bottom: 30px;
+            left: 10px;
+            z-index: 9998;
+            padding: 10px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            cursor: pointer;
+            text-transform: uppercase;
+            opacity: 0.6;
+            transition:all 0.5s;
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        .info:hover{
+            opacity: 1;
+        }
+
+        #tudo{
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal{
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            background-color: rgba(0,0,0,.5);
+            z-index: 9998;
+        }
+
+        .modal .container{
+            width: 500px;
+            margin: 0 auto;
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 9999;
+        }        
+
+        #mapa{
+            position: absolute;
+            width: 65%;
+            height: 100%;
+            float: left;
+        }
+        #btAbrirTrajeto{
+            display:none;
+            position:fixed;
+            top:49%;
+            right:0px;
+            z-index: 9999;
+            background-color: rgba(52, 73, 94,0.5);
+            color: #ffffff;
+            border: 1px solid #999;
+            border-radius: 3px;
+            font-size: 25px;
+            cursor: pointer;
+            transition: all 0.5s;
+        }
+        #btAbrirTrajeto:hover{
+            background-color: rgba(52, 73, 94,1);
+        }
+        #trajeto{
+            position: absolute;
+            width: 35%;
+            height: 100%;
+            float: right;
+            right:0px;
+            overflow: auto;
+            overflow-x: hidden;
+            border-left: 2px solid #999;
+        }
+        #trajeto button{
+            position: fixed;
+            top: 49%;
+            right: 35%;
+            z-index: 99;
+            background-color: rgba(52, 73, 94,0.5);
+            color: #ffffff;
+            border: 1px solid #999;
+            border-radius: 3px;
+            font-size: 25px;
+            cursor: pointer;
+            transition: all 0.5s;
+        }
+        #trajeto button:hover{
+            background-color: rgba(52, 73, 94,1);
+        }
+
+    </style>
+</head>
+<body onload="initialize()">
+<div id="tudo">
+    <div id="mapa">  </div>
+    <button class="info">Informações</button>
+    <button id="btAbrirTrajeto"> &laquo; </button>
+    <div id="trajeto">
+        <button id="btFecharTrajeto"> &raquo; </button>
+    </div>
+</div>
+<div id="modal" class="modal">
+    <div class="container">
+        <h1 class=" text-center">  Rota com mais de 2 pontos </h1>
+        <hr>
+        <p class=" text-center font-size-15">  Mapa com mais de dois endereços </p>
+        <b>por Lennon </b>
+    </div>
+</div>
+</body>
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+    function initialize() { 
+    
+    var map;
+    var directionsDisplay;
+    var directionsService = new google.maps.DirectionsService();
+
+    directionsDisplay = new google.maps.DirectionsRenderer();
+        var latlng = new google.maps.LatLng(-18.8800397, -47.05878999999999);
+
+        var options = {
+            zoom: 9,
+            center: latlng,
+            scrollwheel: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        map = new google.maps.Map(document.getElementById('mapa'), options);
+        directionsDisplay.setMap(map);
+        directionsDisplay.setPanel(document.getElementById('trajeto'));
+
+        var request = {
+            origin: ' Estrada Bom Retiro, 1888 - Bom Retiro, São José dos Campos - State of São Paulo, 12226-202, Brazil',
+            destination: ' Santa Lúcia, São José dos Campos - State of São Paulo, Brazil',
+            waypoints: [{location: ' Majestic, São José dos Campos - State of São Paulo, Brazil'},],
+            //waypoints: [{location: 'Rodoviária, Campinas'}, {location: 'Taquaral, Campinas'}],
+            optimizeWaypoints: true,
+            travelMode: google.maps.TravelMode.DRIVING
+        };
+
+        directionsService.route(request, function(result, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(result);
+            }
+        });
+
+    }
+
+    function handleNoGeolocation(errorFlag) {
+        if (errorFlag) {
+            var content = 'Error: The Geolocation service failed.';
+        } else {
+            var content = 'Error: Your browser doesn\'t support geolocation.';
+        }
+
+        var options = {
+            map: map,
+            position: new google.maps.LatLng(60, 105),
+            content: content
+        };
+
+        var infowindow = new google.maps.InfoWindow(options);
+        map.setCenter(options.position);
+    }
+</script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script type="text/javascript">
+    $('#btFecharTrajeto').click(function(){
+
+        $('#trajeto').hide().slideUp("slow");
+        $('#mapa').css("width", "100%");
+        $('#btAbrirTrajeto').css("display","block");
+        initialize();
+
+    });
+
+    $('#btAbrirTrajeto').click(function(){
+
+        $('#trajeto').show();
+        $('#mapa').css("width", "65%");
+        $('#btAbrirTrajeto').css("display","none");
+        initialize();
+
+    });
+
+    $('#modal').click(function(){
+        $('#modal').hide().slideUp();
+    });
+
+    $('.info').click(function(){
+        $('#modal').slideUp().show();
+    });
+</script>
+</html>
